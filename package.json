@@ -1,0 +1,33 @@
+{
+  "name": "government-expenditure-tracker",
+  "version": "1.0.0",
+  "description": "Government project expenditure tracking system with blockchain integration",
+  "scripts": {
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm run preview",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "install:all": "npm install && npm run install:backend && npm run install:frontend",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "clean:comments": "node remove_comments.js",
+    "deploy:contract": "cd backend && npm run deploy-contract"
+  },
+  "keywords": [
+    "blockchain",
+    "government",
+    "expenditure",
+    "tracking",
+    "transparency"
+  ],
+  "author": "HACK5.0 Team",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "glob": "^10.3.10"
+  }
+} 
