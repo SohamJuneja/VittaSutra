@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VittaSutra Blockchain Interface</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <script src="./js/metamaskConnector.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      color: #333;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    h1 {
+      color: #FF6B00;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button {
+      background: #1E3A8A;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #152c69;
+    }
+    .secondary-button {
+      background: #3E63DD;
+    }
+    .secondary-button:hover {
+      background: #2E4FB8;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    #connectButton {
+      background: #FF6B00;
+    }
+    #connectButton:hover {
+      background: #e56000;
+    }
+    .project-item {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .status-0 { background: #f0f0f0; color: #666; }
+    .status-1 { background: #e6f7ff; color: #0066cc; }
+    .status-2 { background: #f6ffed; color: #52c41a; }
+    .status-3 { background: #fff2e8; color: #fa541c; }
+    .hidden {
+      display: none;
+    }
+    .transaction-form {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+    .network-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: #f2f2f2;
+      color: #666;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #4CAF50;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 1000;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>VittaSutra Blockchain Interface</h1>
+    <p>Transparent and immutable tracking of public funds</p>
+  </header>
+
+  <div class="card">
+    <h2>Blockchain Connection</h2>
+    <p>Connect your MetaMask wallet to interact with the blockchain.</p>
+    <div class="actions">
+      <button id="connectButton">Connect MetaMask</button>
+      <button id="addToMetaMaskButton" class="secondary-button">Add VittaSutra to MetaMask</button>
+    </div>
+    
+    <div id="accountInfo" class="hidden">
+      <p>Connected Account: <span id="accountAddress"></span> <span id="networkInfo" class="network-badge"></span></p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card hidden" id="projectForm">
+      <h2>Create New Project</h2>
+      <form id="createProjectForm">
+        <div class="form-group">
+          <label for="projectName">Project Name:</label>
+          <input type="text" id="projectName" required placeholder="Enter project name">
+        </div>
+        <div class="form-group">
+          <label for="description">Description:</label>
+          <textarea id="description" rows="3" required placeholder="Project description"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="department">Department:</label>
+          <select id="department" required>
+            <option value="">Select Department</option>
+            <option value="Urban Development">Urban Development</option>
+            <option value="Rural Development">Rural Development</option>
+            <option value="Education">Education</option>
+            <option value="Health">Health</option>
+            <option value="Infrastructure">Infrastructure</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="budget">Total Budget (ETH):</label>
+          <input type="number" id="budget" required min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label for="startDate">Start Date:</label>
+          <input type="date" id="startDate" required>
+        </div>
+        <div class="form-group">
+          <label for="endDate">End Date:</label>
+          <input type="date" id="endDate" required>
+        </div>
+        <button type="submit">Create Project</button>
+      </form>
+    </div>
+
+    <div class="card" id="projectsCard">
+      <h2>Projects</h2>
+      <div id="projectsList">
+        <p>Connect to MetaMask to view projects</p>
+      </div>
+    </div>
+
+    <div class="card hidden" id="transactionsCard">
+      <h2>Project Transactions</h2>
+      <div id="transactionsList">
+        <p>Select a project to view transactions</p>
+      </div>
+
+      <div class="transaction-form hidden" id="allocateFundsForm">
+        <h3>Allocate Funds</h3>
+        <form id="allocateForm">
+          <input type="hidden" id="allocateProjectId">
+          <div class="form-group">
+            <label for="allocateAmount">Amount (ETH):</label>
+            <input type="number" id="allocateAmount" required min="0" step="0.01" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label for="allocateDescription">Description:</label>
+            <input type="text" id="allocateDescription" required placeholder="Purpose of allocation">
+          </div>
+          <button type="submit">Allocate Funds</button>
+        </form>
+      </div>
+
+      <div class="transaction-form hidden" id="recordExpenseForm">
+        <h3>Record Expense</h3>
+        <form id="expenseForm">
+          <input type="hidden" id="expenseProjectId">
+          <div class="form-group">
+            <label for="expenseAmount">Amount (ETH):</label>
+            <input type="number" id="expenseAmount" required min="0" step="0.01" placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label for="expenseDescription">Description:</label>
+            <input type="text" id="expenseDescription" required placeholder="Purpose of expense">
+          </div>
+          <button type="submit">Record Expense</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let connector;
+    let selectedProjectId = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      connector = new BlockchainConnector();
+      
+      // Initialize UI elements
+      const connectButton = document.getElementById('connectButton');
+      const addToMetaMaskButton = document.getElementById('addToMetaMaskButton');
+      const accountInfo = document.getElementById('accountInfo');
+      const accountAddress = document.getElementById('accountAddress');
+      const networkInfo = document.getElementById('networkInfo');
+      const projectForm = document.getElementById('projectForm');
+      const createProjectForm = document.getElementById('createProjectForm');
+      const projectsList = document.getElementById('projectsList');
+      const transactionsCard = document.getElementById('transactionsCard');
+      const transactionsList = document.getElementById('transactionsList');
+      const allocateFundsForm = document.getElementById('allocateFundsForm');
+      const recordExpenseForm = document.getElementById('recordExpenseForm');
+      const allocateForm = document.getElementById('allocateForm');
+      const expenseForm = document.getElementById('expenseForm');
+
+      // Add to MetaMask button handler
+      addToMetaMaskButton.addEventListener('click', async function() {
+        try {
+          if (!connector.isMetaMaskInstalled()) {
+            alert('MetaMask is not installed. Please install MetaMask to use this application.');
+            return;
+          }
+
+          const chainId = '0x539'; // Hex value of 1337
+          const chainName = 'VittaSutra Local Network';
+          const rpcUrls = ['http://127.0.0.1:8546'];
+          const blockExplorerUrls = [];
+          const nativeCurrency = {
+            name: 'ETH',
+            symbol: 'ETH',
+            decimals: 18
+          };
+
+          // Request to add the network to MetaMask
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId,
+              chainName,
+              rpcUrls,
+              blockExplorerUrls,
+              nativeCurrency
+            }]
+          });
+
+          // Add token contract
+          if (connector.contractAddress) {
+            await window.ethereum.request({
+              method: 'wallet_watchAsset',
+              params: {
+                type: 'ERC20',
+                options: {
+                  address: connector.contractAddress,
+                  symbol: 'ARTH',
+                  decimals: 18,
+                  image: 'https://raw.githubusercontent.com/MetaMask/eth-contract-metadata/master/images/dai.svg'
+                }
+              }
+            });
+          }
+
+          showToast('VittaSutra network successfully added to MetaMask!');
+        } catch (error) {
+          console.error('Error adding network to MetaMask:', error);
+          alert('Error adding network to MetaMask: ' + error.message);
+        }
+      });
+
+      // Connect button handler
+      connectButton.addEventListener('click', async function() {
+        try {
+          if (!connector.isMetaMaskInstalled()) {
+            alert('MetaMask is not installed. Please install MetaMask to use this application.');
+            return;
+          }
+
+          const connection = await connector.connectToMetaMask();
+          accountAddress.textContent = shortenAddress(connection.account);
+          accountInfo.classList.remove('hidden');
+          projectForm.classList.remove('hidden');
+          
+          // Show network info
+          if (connection.networkId === 1) {
+            networkInfo.textContent = 'Ethereum Mainnet';
+          } else if (connection.networkId === 1337 || connection.networkId === 31337) {
+            networkInfo.textContent = 'Local Network';
+          } else {
+            networkInfo.textContent = `Network ID: ${connection.networkId}`;
+          }
+          
+          // Initialize contract
+          connector.initializeContract();
+          
+          // Load projects
+          loadProjects();
+        } catch (error) {
+          alert('Error connecting to MetaMask: ' + error.message);
+        }
+      });
+
+      // Project creation form handler
+      createProjectForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+          const name = document.getElementById('projectName').value;
+          const description = document.getElementById('description').value;
+          const department = document.getElementById('department').value;
+          const budget = document.getElementById('budget').value;
+          const startDate = new Date(document.getElementById('startDate').value);
+          const endDate = new Date(document.getElementById('endDate').value);
+
+          // Show loading state
+          const submitButton = this.querySelector('button[type="submit"]');
+          const originalText = submitButton.textContent;
+          submitButton.textContent = 'Creating...';
+          submitButton.disabled = true;
+
+          await connector.createProject(name, description, department, budget, null, startDate, endDate);
+          
+          // Reset form and reload projects
+          createProjectForm.reset();
+          loadProjects();
+          
+          showToast('Project created successfully!');
+        } catch (error) {
+          alert('Error creating project: ' + error.message);
+        } finally {
+          // Reset button state
+          const submitButton = this.querySelector('button[type="submit"]');
+          submitButton.textContent = 'Create Project';
+          submitButton.disabled = false;
+        }
+      });
+
+      // Allocate funds form handler
+      allocateForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+          const projectId = document.getElementById('allocateProjectId').value;
+          const amount = document.getElementById('allocateAmount').value;
+          const description = document.getElementById('allocateDescription').value;
+
+          // Show loading state
+          const submitButton = this.querySelector('button[type="submit"]');
+          const originalText = submitButton.textContent;
+          submitButton.textContent = 'Allocating...';
+          submitButton.disabled = true;
+
+          await connector.allocateFunds(projectId, amount, description);
+          
+          // Reset form and reload
+          this.reset();
+          loadProjects();
+          loadTransactions(projectId);
+          
+          showToast('Funds allocated successfully!');
+        } catch (error) {
+          alert('Error allocating funds: ' + error.message);
+        } finally {
+          // Reset button state
+          const submitButton = this.querySelector('button[type="submit"]');
+          submitButton.textContent = 'Allocate Funds';
+          submitButton.disabled = false;
+        }
+      });
+
+      // Record expense form handler
+      expenseForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        try {
+          const projectId = document.getElementById('expenseProjectId').value;
+          const amount = document.getElementById('expenseAmount').value;
+          const description = document.getElementById('expenseDescription').value;
+
+          if (!projectId || projectId === '0') {
+            alert('Invalid project ID');
+            return;
+          }
+
+          if (!amount || parseFloat(amount) <= 0) {
+            alert('Please enter a valid amount greater than 0');
+            return;
+          }
+
+          if (!description.trim()) {
+            alert('Please enter a description');
+            return;
+          }
+
+          // Show loading state
+          const submitButton = this.querySelector('button[type="submit"]');
+          const originalText = submitButton.textContent;
+          submitButton.textContent = 'Recording...';
+          submitButton.disabled = true;
+
+          console.log(`Sending expense: Project ID=${projectId}, Amount=${amount}, Description="${description}"`);
+          
+          try {
+            const result = await connector.recordExpense(projectId, amount, description);
+            console.log('Expense recorded successfully:', result);
+            
+            // Reset form and reload data
+            this.reset();
+            document.getElementById('expenseProjectId').value = projectId; // Keep the project ID
+            loadProjects();
+            loadTransactions(projectId);
+            
+            showToast('Expense recorded successfully!');
+          } catch (txError) {
+            console.error('Transaction error:', txError);
+            let errorMsg = txError.message;
+            
+            // Extract useful error message from MetaMask or contract
+            if (txError.code === 4001) {
+              errorMsg = 'Transaction rejected by user';
+            } else if (txError.message.includes('execution reverted')) {
+              const revertReason = txError.message.match(/reason string: ['"](.+?)['"]/);
+              if (revertReason && revertReason[1]) {
+                errorMsg = revertReason[1];
+              }
+            }
+            
+            alert(`Error recording expense: ${errorMsg}`);
+          }
+        } catch (error) {
+          console.error('Form processing error:', error);
+          alert('Error processing form: ' + error.message);
+        } finally {
+          // Reset button state
+          const submitButton = this.querySelector('button[type="submit"]');
+          submitButton.textContent = 'Record Expense';
+          submitButton.disabled = false;
+        }
+      });
+
+      // Function to load projects
+      async function loadProjects() {
+        if (!connector.isConnected) return;
+        
+        try {
+          projectsList.innerHTML = '<p>Loading projects...</p>';
+          
+          const projects = await connector.getProjects();
+          
+          if (projects.length === 0) {
+            projectsList.innerHTML = '<p>No projects found</p>';
+            return;
+          }
+          
+          let html = '';
+          projects.forEach(project => {
+            html += `
+              <div class="project-item">
+                <h3>${project.name}</h3>
+                <p>${project.description}</p>
+                <p><strong>Department:</strong> ${project.department}</p>
+                <p>
+                  <strong>Budget:</strong> ${project.totalBudget} ETH | 
+                  <strong>Allocated:</strong> ${project.allocatedAmount} ETH | 
+                  <strong>Spent:</strong> ${project.spentAmount} ETH
+                </p>
+                <p>
+                  <span class="status status-${project.status === 'Not Started' ? 0 : project.status === 'In Progress' ? 1 : project.status === 'Completed' ? 2 : 3}">
+                    ${project.status}
+                  </span>
+                </p>
+                <div class="actions">
+                  <button onclick="viewTransactions(${project.id})">View Transactions</button>
+                  <button onclick="showAllocateForm(${project.id})">Allocate Funds</button>
+                  <button onclick="showExpenseForm(${project.id})">Record Expense</button>
+                </div>
+              </div>
+            `;
+          });
+          
+          projectsList.innerHTML = html;
+        } catch (error) {
+          console.error('Error loading projects:', error);
+          projectsList.innerHTML = '<p>Error loading projects</p>';
+        }
+      }
+
+      // Function to load transactions for a project
+      async function loadTransactions(projectId) {
+        if (!connector.isConnected || !projectId) return;
+        
+        try {
+          transactionsList.innerHTML = '<p>Loading transactions...</p>';
+          
+          const transactions = await connector.getProjectTransactions(projectId);
+          
+          if (transactions.length === 0) {
+            transactionsList.innerHTML = '<p>No transactions found for this project</p>';
+            return;
+          }
+          
+          // Sort transactions by timestamp (newest first)
+          transactions.sort((a, b) => b.timestamp - a.timestamp);
+          
+          let html = '';
+          transactions.forEach(tx => {
+            const typeClass = tx.type === 'Allocation' ? 'status-1' : tx.type === 'Expense' ? 'status-3' : 'status-0';
+            html += `
+              <div class="project-item">
+                <p>
+                  <span class="status ${typeClass}">${tx.type}</span>
+                  <strong>${tx.amount} ETH</strong>
+                </p>
+                <p>${tx.description}</p>
+                <p><small>Transaction ID: ${tx.id}</small></p>
+                <p><small>Date: ${formatDate(tx.timestamp)}</small></p>
+              </div>
+            `;
+          });
+          
+          transactionsList.innerHTML = html;
+        } catch (error) {
+          console.error('Error loading transactions:', error);
+          transactionsList.innerHTML = '<p>Error loading transactions</p>';
+        }
+      }
+
+      // Helper function to show toast messages
+      window.showToast = function(message) {
+        // Create toast if it doesn't exist
+        let toast = document.getElementById('toast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'toast';
+          toast.className = 'toast';
+          document.body.appendChild(toast);
+        }
+        
+        // Set message and show
+        toast.textContent = message;
+        toast.style.display = 'block';
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+          toast.style.display = 'none';
+        }, 3000);
+      };
+
+      // Helper function to format dates
+      function formatDate(date) {
+        return new Date(date).toLocaleString();
+      }
+
+      // Helper function to shorten addresses
+      function shortenAddress(address) {
+        return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+      }
+
+      // Expose functions to global scope for button handlers
+      window.viewTransactions = function(projectId) {
+        selectedProjectId = projectId;
+        transactionsCard.classList.remove('hidden');
+        loadTransactions(projectId);
+      };
+
+      window.showAllocateForm = function(projectId) {
+        selectedProjectId = projectId;
+        document.getElementById('allocateProjectId').value = projectId;
+        allocateFundsForm.classList.remove('hidden');
+        recordExpenseForm.classList.add('hidden');
+        transactionsCard.classList.remove('hidden');
+        loadTransactions(projectId);
+      };
+
+      window.showExpenseForm = function(projectId) {
+        selectedProjectId = projectId;
+        document.getElementById('expenseProjectId').value = projectId;
+        recordExpenseForm.classList.remove('hidden');
+        allocateFundsForm.classList.add('hidden');
+        transactionsCard.classList.remove('hidden');
+        loadTransactions(projectId);
+      };
+    });
+  </script>
+  
+  <!-- Toast container for notifications -->
+  <div id="toast" class="toast"></div>
+</body>
+</html> 
