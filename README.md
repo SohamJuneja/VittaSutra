@@ -1,10 +1,10 @@
-# Government Expenditure Tracker
+# VittaSutra
 
 A blockchain-based system for tracking and managing government project expenditures with enhanced transparency and accountability.
 
 ## Overview
 
-The Government Expenditure Tracker is a comprehensive solution designed to bring transparency and efficiency to government project expenditure management. By leveraging blockchain technology, the system ensures immutable records of all financial transactions and project progress, while providing a user-friendly interface for stakeholders to monitor and manage expenditures.
+VittaSutra is a comprehensive solution designed to bring transparency and efficiency to government project expenditure management. By leveraging blockchain technology, the system ensures immutable records of all financial transactions and project progress, while providing a user-friendly interface for stakeholders to monitor and manage expenditures.
 
 ## Solution & Approach
 
@@ -61,18 +61,26 @@ Our solution combines traditional web technologies with blockchain to create a r
    ```
 
 3. Set up environment variables:
-   - Create `.env` files in both frontend and backend directories
+   - Create `.env` file in backend directory
    - Configure necessary environment variables (see example files)
 
-4. Deploy smart contracts:
-   ```bash
-   npm run deploy:contract
-   ```
+### Hardhat SETUP:
 
+1. Open a Terminal and start a hardhat node:
+   ```bash
+   cd ./blockchain/
+   npx hardhat node
+   ```
+2. Open another terminal and deploy the contract:
+   ```bash
+   cd ./blockchain/
+   npx hardhat run ./scripts/deploy.js --network localhost
+   ```
 ### Development
 
 1. Start the development servers:
    ```bash
+   cd ./frontend/
    npm run dev
    ```
    This will start both frontend and backend servers concurrently.
@@ -115,4 +123,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Authors
 
-HACK5.0 Team 
+Team Black Fish 
