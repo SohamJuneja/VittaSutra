@@ -72,6 +72,24 @@ Our solution combines traditional web technologies with blockchain to create a r
 
 ### Hardhat Configuration
 
+1. Open a terminal and start hardhat node:
+   ```bash
+   cd ./blockchain/
+   npx hardhat node
+   ```
+
+2. Open a second terminal and deploy the contract:
+   ```bash
+   cd ./blockchain/
+   npx hardhat run ./scripts/deploy.js --network localhost
+   ```
+### Start The Web Server:
+
+1. In the Second Terminal Only or a third, optionally:
+   ```bash
+   cd ./frontend/
+   npm run dev
+   ```
 ## 🔒 Security Features
 
 - 🛡️ Rate limiting on API endpoints
@@ -94,13 +112,11 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👥 Authors
 
-Ananya Pratap Singh
-Soham Juneja
-Ujjawal Maheshwari
-
-HACK5.0 Team 
+- Ananya Pratap Singh
+- Soham Juneja
+- Ujjawal Maheshwari
 
 ---
 <div align="center">
-  <sub>Built with ❤️ by HACK5.0 Team</sub>
+  <sub>Built with ❤️ by Team Black Fish/sub>
 </div> 
